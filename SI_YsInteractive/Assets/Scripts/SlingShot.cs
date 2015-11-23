@@ -10,10 +10,14 @@ public class SlingShot : MonoBehaviour {
 
     public float speed;
     float dist;
-    bool shoot = false;
+    public bool shoot = false;
+	public bool playing = false;
+	public bool action = false;
 
 	LineRenderer lineRenderer;
+	public int myID;
 
+	public float playerSpeed;
 
 	// Use this for initialization
 	void Start () {
@@ -24,6 +28,20 @@ public class SlingShot : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         transform.position = transform.parent.position;
+		Vector3 vel = transform.parent.GetComponent<Rigidbody>().velocity;
+		playerSpeed = vel.magnitude;
+
+		if(myID == GameManagerScript.instance.currentId)
+		{
+			if(playerSpeed <=0.1f && !playing)
+			{
+
+				transform.parent.GetComponent<Rigidbody>().constraints =RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotation;
+				GameManagerScript.instance.changeTurn();
+				action = false;
+			}
+		}
+
 
         if (Input.GetMouseButton(0) && shoot) // si le joueur est en train de tirer
         {
@@ -53,26 +71,40 @@ public class SlingShot : MonoBehaviour {
 
     void OnMouseDown()
     {
-        shoot = true;
-        mouseDownPos = new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y); //on stock la position de départ
-        startMouseDownPos = mouseDownPos;
-        mouseDownPos.y = 0;
+		if(!action && myID == GameManagerScript.instance.currentId)
+		{
+			shoot = true;
+			playing = true;
+			transform.parent.GetComponent<Rigidbody>().constraints =RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotation;
+			mouseDownPos = new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y); //on stock la position de départ
+			startMouseDownPos = mouseDownPos;
+			mouseDownPos.y = 0;
+		}
+        
         
     }
 
     void OnMouseUp()
     {
-        shoot = false;
-        mouseUpPos = new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y); //on stock la position de d'arrivée
-        mouseUpPos.y = 0;
-        dist = Vector3.Distance(mouseDownPos, mouseUpPos);
-        var direction = mouseDownPos - mouseUpPos; 
-        transform.parent.GetComponent<Rigidbody>().AddForce(direction * speed * dist/2);
-		lineRenderer.enabled = false;
+		if(!action && myID == GameManagerScript.instance.currentId)
+		{
+			shoot = false;
+			action = true;
+	        mouseUpPos = new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y); //on stock la position de d'arrivée
+	        mouseUpPos.y = 0;
+	        dist = Vector3.Distance(mouseDownPos, mouseUpPos);
+	        var direction = mouseDownPos - mouseUpPos;
+	        transform.parent.GetComponent<Rigidbody>().AddForce(direction * speed * dist/2);
+			lineRenderer.enabled = false;
 
-        /*if(dist> 10.f){
-         {
-            action = true;
-         }*/
+			StartCoroutine(Wait (0.1f));
+
+		}
     }
+
+	IEnumerator Wait(float time)
+	{
+		yield return new WaitForSeconds(time);
+		playing = false;
+	}
 }
