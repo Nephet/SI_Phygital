@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
-    int ID;
+    public int ID;
     public int health;
     public bool isShieldUp;
     public TYPE playerType;
