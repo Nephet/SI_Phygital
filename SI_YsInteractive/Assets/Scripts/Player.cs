@@ -14,12 +14,12 @@ public class Player : MonoBehaviour {
     {
         if(actionReady)
         {
-            Vector2 pos = Camera.main.WorldToScreenPoint(this.transform.position);
-            if (GUI.Button(new Rect(new Vector2(pos.x, pos.y), new Vector2(50f, 50f)), "jouer"))
+            //Vector2 pos = Camera.main.WorldToScreenPoint(this.transform.position);
+            /*if (GUI.Button(new Rect(new Vector2(pos.x, pos.y), new Vector2(50f, 50f)), "jouer"))
             {
                 Debug.Log("joueur " + ID + " a jouer");
                 actionReady = false;
-            };
+            };*/
         }
     }
 

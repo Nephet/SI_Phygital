@@ -54,6 +54,7 @@ public class GameManagerScript : MonoBehaviour {
         state = STATE.START;
         Player1 = null;
         Player2 = null;
+        //if (Random.Range(0, 4) > 2) p1Turn = true;
 	}
 	
 	// Update is called once per frame
@@ -90,7 +91,7 @@ public class GameManagerScript : MonoBehaviour {
 
     public void changeTurn()
     {
-        Debug.Log("Tour du joueur 1 : " + p1Turn);
+        //Debug.Log("Tour du joueur 1 : " + p1Turn);
         p1Turn = !p1Turn;
 		if(p1Turn)
 		{
@@ -122,6 +123,8 @@ public class GameManagerScript : MonoBehaviour {
 					scriptP1 = Player1.transform.GetChild(0).GetComponent<Player>();
                     scriptP1.setType(TYPE.FEU);
                     scriptP1.setID(1);
+                    HUDManager.Instance.setPlayer(1, Player1);
+                    HUDManager.Instance.setLifeUI(1, 5);
                 }
                 else
                 {
@@ -138,6 +141,8 @@ public class GameManagerScript : MonoBehaviour {
 					scriptP2 = Player2.transform.GetChild(0).GetComponent<Player>();
                     scriptP2.setType(TYPE.FEU);
                     scriptP2.setID(2);
+                    HUDManager.Instance.setPlayer(2, Player2);
+                    HUDManager.Instance.setLifeUI(2, 5);
                 }
                 else
                 {
