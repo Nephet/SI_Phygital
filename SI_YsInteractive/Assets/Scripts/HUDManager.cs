@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using System.Collections.Generic;
-    
+using System.Linq;
 
 public class HUDManager : Singleton<HUDManager> {
     protected HUDManager() { }
@@ -42,24 +42,92 @@ public class HUDManager : Singleton<HUDManager> {
         }
     }
 
-    public void setLifeUI(int ID, int Life)
+    public void updateLife(int ID, int Life)
     {
+        int diffPoints;
+        showLifeBar(ID, true);
         GameObject cache;
         if(ID == 1)
         {
             
+            if(Life < p1LifePoints.Count)
+            {
+                // lost life
+                diffPoints = p1LifePoints.Count - Life;
+                for (int i = 0; i < diffPoints; i++)
+                {
+                    Destroy(p1LifePoints.Last());
+                    p1LifePoints.RemoveAt(p1LifePoints.Count-1);
+                }
+            }
+            else
+            {
+                // add life
+                diffPoints = Life - p1LifePoints.Count;
+                for (int i = 0; i < diffPoints; i++)
+                {
+                    cache = (GameObject)Instantiate(LifePoint, new Vector3(p1LifePoints.Last().transform.position.x+0.4f,0,0), Quaternion.Euler(90, 0, 0));
+                    cache.transform.parent = p1Life.transform;
+                    p1LifePoints.Add(cache);
+                }
+            
+            }
+        }
+        else
+        {
+            if (Life < p2LifePoints.Count)
+            {
+                //Debug.Log("lost life2 " + p2LifePoints.Count+ " - "+ Life);
+                diffPoints = p2LifePoints.Count - Life;
+                for (int i = 0; i < diffPoints; i++)
+                {
+                    Destroy(p2LifePoints.Last());
+                    p2LifePoints.RemoveAt(p2LifePoints.Count-1);
+                }
+            }
+            else
+            {
+                diffPoints = Life - p2LifePoints.Count;
+                for (int i = 0; i < diffPoints; i++)
+                {
+                    cache = (GameObject)Instantiate(LifePoint, new Vector3(p2LifePoints.Last().transform.position.x + 0.4f, 0, 0), Quaternion.Euler(90, 0, 0));
+                    cache.transform.parent = p2Life.transform;
+                    p1LifePoints.Add(cache);
+                }
+            }
+        }
+    }
+
+    public void showLifeBar(int ID, bool show)
+    {
+        if(ID ==1)
+        {
+            p1Life.SetActive(show);
+        }
+        else
+        {
+            p2Life.SetActive(show);
+        }
+    }
+
+    public void setLifeUI(int ID, int Life)
+    {
+        GameObject cache = new GameObject();
+        if(ID == 1)
+        {
+            // vide la liste 
             foreach(GameObject go in p1LifePoints)
             {
                 Destroy(go);
             }
             p1LifePoints.Clear();
+            // remplis la liste de point de vie
             for (int i = 0; i < Life;i++ )
             {
                 cache = (GameObject)Instantiate(LifePoint, new Vector3((i * 0.4f), 0, 0), Quaternion.Euler(90, 0, 0));
                 cache.transform.parent = p1Life.transform;
                 p1LifePoints.Add(cache);
             }
-            
         }
         else
         {
@@ -75,7 +143,6 @@ public class HUDManager : Singleton<HUDManager> {
                 p2LifePoints.Add(cache);
                 
             }
-            
         }
         
     }

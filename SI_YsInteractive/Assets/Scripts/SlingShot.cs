@@ -15,6 +15,7 @@ public class SlingShot : MonoBehaviour {
 	public bool action = false;
 
 	LineRenderer lineRenderer;
+    LineRenderer lineAim;
     Player player;
 	public int myID;
 
@@ -24,7 +25,9 @@ public class SlingShot : MonoBehaviour {
 	void Start () {
 		lineRenderer = transform.parent.gameObject.GetComponent<LineRenderer>();
 		lineRenderer.enabled = false;
-        player = transform.gameObject.GetComponent<Player>();
+        lineAim = transform.gameObject.GetComponent<LineRenderer>();
+        lineAim.enabled = false;
+        player = transform.parent.gameObject.GetComponent<Player>();
 	}
 	
 	// Update is called once per frame
@@ -56,7 +59,25 @@ public class SlingShot : MonoBehaviour {
         {
             // on scale la jauge de puissance en fonction de la distance
             ScaleJauge();
+            drawAim();
         }
+    }
+
+    void drawAim()
+    {
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = Camera.main.transform.position.y - transform.parent.position.y;
+        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+        RaycastHit hit;
+        Debug.DrawLine(mousePos, transform.position);
+        lineAim.SetPosition(0, this.transform.position);
+        if (Physics.Raycast(mousePos, transform.position, out hit, 10000f))
+        {
+            print(mousePos.x + " " + mousePos.z);
+            lineAim.SetPosition(1,hit.point);
+        }
+        lineAim.enabled = true;
+        lineAim.SetColors(Color.red, new Color(255.0f, 255.0f - (100 + dist), 0.0f));
     }
 
     void ScaleJauge()
@@ -84,6 +105,10 @@ public class SlingShot : MonoBehaviour {
 			mouseDownPos = new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y); //on stock la position de départ
 			startMouseDownPos = mouseDownPos;
 			mouseDownPos.y = 0;
+            
+
+            
+            
 		}
         
         
@@ -96,7 +121,7 @@ public class SlingShot : MonoBehaviour {
             mouseUpPos = new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y); //on stock la position de d'arrivée
             mouseUpPos.y = 0;
             dist = Vector3.Distance(mouseDownPos, mouseUpPos);
-            Debug.Log(dist);
+
 
             if (dist > 24.0f)
             {
@@ -110,7 +135,7 @@ public class SlingShot : MonoBehaviour {
 
             }
             lineRenderer.enabled = false;
-			
+            lineAim.enabled = false;
 		}
     }
 

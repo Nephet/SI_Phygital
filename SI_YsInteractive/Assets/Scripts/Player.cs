@@ -8,6 +8,7 @@ public class Player : MonoBehaviour {
     public TYPE playerType;
     public int Damage;
     public bool actionReady;
+    public bool attackReady;
 	// Use this for initialization
 
     void OnGUI()
@@ -27,8 +28,6 @@ public class Player : MonoBehaviour {
 
         playerType = TYPE.NONE;
         isShieldUp = false;
-        health = 10;
-        Damage = 1;
         actionReady = false;
 	}
 	
@@ -40,6 +39,15 @@ public class Player : MonoBehaviour {
         }
 	}
 
+    void OnCollisionEnter(Collision collision)
+    {
+        if((GameManagerScript.instance.getCurrentID()== this.ID)&&(collision.collider.GetComponent<Player>())&&attackReady)
+        {
+            collision.collider.GetComponent<Player>().takeDamage(this.Damage);
+            attackReady = false;
+        }
+    }
+
     public bool turnEnded()
     {
         return !actionReady;
@@ -48,6 +56,7 @@ public class Player : MonoBehaviour {
     public void setTurn(bool turn)
     {
         actionReady = turn;
+        attackReady = turn;
     }
 
     public void setType(TYPE elem)
@@ -58,8 +67,13 @@ public class Player : MonoBehaviour {
     public void setID(int id)
     {
         ID = id;
-		SlingShot ss= gameObject.GetComponent<SlingShot>();
+		SlingShot ss= gameObject.GetComponentInChildren<SlingShot>();
 		ss.myID = id;
+    }
+
+    public int getLife()
+    {
+        return health;
     }
 
     void takeDamage(int damage)
@@ -71,14 +85,17 @@ public class Player : MonoBehaviour {
         else
         {
             // get dmg
-            if(health > damage)
+            if((health > damage)&&(damage > 0))
             {
                 health -= damage;
+                
             }
             else
             {
+                Debug.Log("Player "+ID+" lost");
                 // mort
             }
+            HUDManager.Instance.updateLife(this.ID, health);
         }
     }
 

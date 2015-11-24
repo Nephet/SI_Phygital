@@ -76,6 +76,11 @@ public class GameManagerScript : MonoBehaviour {
         }
 	}
 
+    public int getCurrentID()
+    {
+        return currentId;
+    }
+
     void gameRunning()
     {
         if (p1Turn && scriptP1.turnEnded())
@@ -120,15 +125,16 @@ public class GameManagerScript : MonoBehaviour {
                 {
 					Player1 = (GameObject)Instantiate(PlayerPrefab, playerPosInWorld, new Quaternion());
                     Player1.name = "Player1";
-					scriptP1 = Player1.transform.GetChild(0).GetComponent<Player>();
+					scriptP1 = Player1.GetComponent<Player>();
                     scriptP1.setType(TYPE.FEU);
                     scriptP1.setID(1);
                     HUDManager.Instance.setPlayer(1, Player1);
-                    HUDManager.Instance.setLifeUI(1, 5);
+                    HUDManager.Instance.setLifeUI(1, scriptP1.getLife());
                 }
                 else
                 {
-                    Player1.transform.position = pos;
+                    
+                    Player1.transform.position = playerPosInWorld;
                 }
             }
             else
@@ -138,15 +144,15 @@ public class GameManagerScript : MonoBehaviour {
                 {
 					Player2 = (GameObject)Instantiate(PlayerPrefab, playerPosInWorld, new Quaternion());
                     Player2.name = "Player2";
-					scriptP2 = Player2.transform.GetChild(0).GetComponent<Player>();
+					scriptP2 = Player2.GetComponent<Player>();
                     scriptP2.setType(TYPE.FEU);
                     scriptP2.setID(2);
                     HUDManager.Instance.setPlayer(2, Player2);
-                    HUDManager.Instance.setLifeUI(2, 5);
+                    HUDManager.Instance.setLifeUI(2, scriptP2.getLife());
                 }
                 else
                 {
-                    Player2.transform.position = pos;
+                    Player2.transform.position = playerPosInWorld;
                 }
             }
         }
