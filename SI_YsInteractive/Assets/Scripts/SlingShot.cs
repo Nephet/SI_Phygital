@@ -10,6 +10,7 @@ public class SlingShot : MonoBehaviour {
 
     public float speed;
     float dist;
+    float distMax = 40;
     public bool shoot = false;
 	public bool playing = false;
 	public bool action = false;
@@ -69,6 +70,7 @@ public class SlingShot : MonoBehaviour {
         Vector3 playerPos = Camera.main.WorldToScreenPoint(transform.position);
 
         dist = Vector3.Distance(new Vector3(playerPos.x, 0.0f, playerPos.y), new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y));
+        
 		lineRenderer.SetPosition(0, new Vector3(transform.parent.position.x, 0.0f, transform.parent.position.z));
 		lineRenderer.SetPosition(1, new Vector3(mousePosInWorld.x, 0.0f, mousePosInWorld.z));
 		lineRenderer.SetColors(Color.yellow, new Color(255.0f, 255.0f-(100+dist), 0.0f));
@@ -96,14 +98,18 @@ public class SlingShot : MonoBehaviour {
             mouseUpPos = new Vector3(Input.mousePosition.x, 0.0f, Input.mousePosition.y); //on stock la position de d'arrivée
             mouseUpPos.y = 0;
             dist = Vector3.Distance(mouseDownPos, mouseUpPos);
-            Debug.Log(dist);
+            
+            if (dist > distMax)
+            {
+                dist = distMax;
+            }
 
             if (dist > 24.0f)
             {
                 shoot = false;
                 action = true;
                 var direction = mouseDownPos - mouseUpPos;
-                transform.parent.GetComponent<Rigidbody>().AddForce(direction * speed * dist / 2);
+                transform.parent.GetComponent<Rigidbody>().AddForce(direction * speed * dist / 2, ForceMode.Force);
                 
 
                 StartCoroutine(Wait(0.1f));
